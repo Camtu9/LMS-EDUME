@@ -6,7 +6,10 @@ const Footer = () => {
     <footer className="bg-gray-900 md:px-36 text-left w-full mt-10">
       <div className="flex flex-col md:flex-row items-start px-8 md:px-0 justify-center gap-10 md:gap-32 py-10 border-b border-white/30">
         <div className="flex flex-col md:items-start items-center w-full">
-          <img className="w-1/4" src={assets.logo_dark} alt="logo" />
+          <div className="flex items-center">
+            <img className="w-1/6" src={assets.favicon} alt="logo" />
+            <p className="ml-2 text-white font-semibold">EduMe</p>
+          </div>
           <p className="mt-6 text-center md:text-left text-sm text-white/80">EduMe is your gateway to online learning, offering a wide range of courses and resources to help you grow, learn, and achieve your goals at your own pace.</p>
         </div>
         <div
