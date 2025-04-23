@@ -1,15 +1,17 @@
 import React from "react";
-import Navbar from "./students/Navbar";
-import Footer from "./students/Footer";
+import StudentNavbar from  "./students/Navbar";
+import EducatorNavbar from "./educator/Navbar";
+import StudentFooter from "./students/Footer";
+import EducatorFooter from "./educator/Footer";
 import { useMatch } from "react-router-dom";
 
 const Layout = ({ children }) => {
 const isEducationRoute = useMatch("/educator/*");
   return (
     <div className="text-default min-h-screen bg-white">
-      {!isEducationRoute && <Navbar />}
+      {isEducationRoute ? <EducatorNavbar /> : < StudentNavbar/>}
       <main>{children}</main>
-      <Footer />
+      {isEducationRoute ? <EducatorFooter /> : < StudentFooter/>}
     </div>
   );
 };
