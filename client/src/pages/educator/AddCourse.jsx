@@ -141,7 +141,8 @@ const AddCourse = () => {
           <p>Course Description</p>
           <div
             ref={editorRef}
-            className="bg-white border rounded p-2 min-h-[100px]"
+            className="bg-white border border-gray-500
+             rounded p-2 min-h-[100px]"
           />
         </div>
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -198,7 +199,7 @@ const AddCourse = () => {
           {chapters.map((chapter, index) => (
             <div
               key={chapter.chapterId}
-              className="bg-white border rounded-lg mb-4"
+              className="bg-white border border-gray-500 rounded-lg mb-4"
             >
               <div className="flex justify-between items-center p-4 border-b">
                 <div className="flex items-center">
@@ -279,7 +280,7 @@ const AddCourse = () => {
                 <p>Lecture Title</p>
                 <input
                   type="text"
-                  className="mt-1 block w-full border rounded py-1 px-2"
+                  className="mt-1 block w-full border border-gray-500 rounded py-1 px-2"
                   value={lectureDetails.lectureTitle}
                   onChange={(e) =>
                     setLectureDetails({
@@ -293,7 +294,7 @@ const AddCourse = () => {
                 <p>Duration (minutes)</p>
                 <input
                   type="number"
-                  className="mt-1 block w-full border rounded py-1 px-2"
+                  className="mt-1 block w-full border border-gray-500 rounded py-1 px-2"
                   value={lectureDetails.lectureDuration}
                   onChange={(e) =>
                     setLectureDetails({
@@ -307,7 +308,7 @@ const AddCourse = () => {
                 <p>Lecture URL</p>
                 <input
                   type="text"
-                  className="mt-1 block w-full border rounded py-1 px-2"
+                  className="mt-1 block w-full border border-gray-500 rounded py-1 px-2"
                   value={lectureDetails.lectureUrl}
                   onChange={(e) =>
                     setLectureDetails({
