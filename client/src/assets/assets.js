@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import favicon from './favicon.png'
+import favicon from '/favicon.png'
 import search_icon from './search_icon.svg'
 import cross_icon from './cross_icon.svg'
 import upload_area from './upload_area.svg'

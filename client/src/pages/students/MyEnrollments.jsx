@@ -1,26 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { Line } from "rc-progress";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyEnrollments = () => {
-  const { enrolledCourses, calculateCourseDuration, navigate } =
-    useAppContext();
-  const [progressArray, setProgressArray] = useState([
-    { lectureCompleted: 2, totalLecture: 4 },
-    { lectureCompleted: 4, totalLecture: 6 },
-    { lectureCompleted: 4, totalLecture: 4 },
-    { lectureCompleted: 2, totalLecture: 8 },
-    { lectureCompleted: 4, totalLecture: 4 },
-    { lectureCompleted: 3, totalLecture: 6 },
-    { lectureCompleted: 2, totalLecture: 8 },
-    { lectureCompleted: 2, totalLecture: 8 },
-    { lectureCompleted: 1, totalLecture: 8 },
-    { lectureCompleted: 2, totalLecture: 10 },
-    { lectureCompleted: 2, totalLecture: 8 },
-    { lectureCompleted: 3, totalLecture: 4 },
-    { lectureCompleted: 1, totalLecture: 8 },
-    { lectureCompleted: 2, totalLecture: 4 },
-  ]);
+  const {
+    enrolledCourses,
+    calculateCourseDuration,
+    navigate,
+    userData,
+    fetchEnrolledCourses,
+    backendUrl,
+    getToken,
+    calculateNoLectures,
+  } = useAppContext();
+  const [progressArray, setProgressArray] = useState([]);
+
+  const getCourseProgress = async () => {
+    try {
+      const token = await getToken();
+      const tempProgressArray = await Promise.all(
+        enrolledCourses.map(async (course) => {
+          const { data } = await axios.post(
+            `${backendUrl}/api/user/get-course-progress`,
+            { courseId: course._id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          let totalLecture = calculateNoLectures(course);
+          const lectureCompleted = data.progressData
+            ? data.progressData.lectureCompleted.length
+            : 0;
+          return { totalLecture, lectureCompleted };
+        })
+      );
+      setProgressArray(tempProgressArray);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(()=> {
+    if(userData){
+      fetchEnrolledCourses()
+    }
+  },[userData])
+
+  useEffect(()=> {
+    if(enrolledCourses.length > 0){
+      getCourseProgress()
+    }
+  },[userData])
 
   return (
     <div className="md:px-36 px-4 pt-10 pb-16">
@@ -28,7 +58,6 @@ const MyEnrollments = () => {
         My Enrollments
       </h1>
 
-      {/* Desktop View */}
       <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white hidden md:block">
         <table className="table-auto w-full text-left">
           <thead className="bg-gray-100 text-gray-700 text-base">
@@ -68,7 +97,8 @@ const MyEnrollments = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm mb-1">
-                      {progress.lectureCompleted} / {progress.totalLecture} Lectures
+                      {progress.lectureCompleted} / {progress.totalLecture}{" "}
+                      Lectures
                     </div>
                     <Line
                       percent={percentage}
@@ -120,13 +150,18 @@ const MyEnrollments = () => {
                   className="w-14 h-14 object-cover rounded-md"
                 />
                 <div>
-                  <p className="font-semibold text-gray-800">{course.courseTitle}</p>
-                  <p className="text-sm text-gray-500">{calculateCourseDuration(course)}</p>
+                  <p className="font-semibold text-gray-800">
+                    {course.courseTitle}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {calculateCourseDuration(course)}
+                  </p>
                 </div>
               </div>
 
               <p className="text-sm text-gray-700 mb-1">
-                Progress: {progress.lectureCompleted} / {progress.totalLecture} Lectures
+                Progress: {progress.lectureCompleted} / {progress.totalLecture}{" "}
+                Lectures
               </p>
 
               <Line

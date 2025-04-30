@@ -1,10 +1,8 @@
-import Course from "../models/Course";
+import Course from "../models/Course.js";
 
 // get all courses
 
-import Course from "../models/Course"
-
-export const getAllCourses = async (req, res){
+export const getAllCourses = async (req, res)=> {
     try {
         const courses = await Course.find({isPublished: true}).select(['-courseContent','-enrolledStudents']).populate({path: 'educator'})
         res.json({success: true, courses})
@@ -16,7 +14,7 @@ export const getAllCourses = async (req, res){
 
 //get course by id
 
-export const getCourseId = async (req,res){
+export const getCourseId = async (req,res)=>{
     try {
         const {id} = req.params
         const courseData = await Course.findById(id).populate({path: 'educator'})
