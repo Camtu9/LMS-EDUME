@@ -8,6 +8,7 @@ import Dashboard from "../pages/educator/Dashboard";
 import AddCourse from "../pages/educator/AddCourse";
 import MyCourses from "../pages/educator/MyCourses";
 import StudentsEnrolled from "../pages/educator/StudentsEnrolled";
+import UserPage from "../pages/UserPage";
 
 export const routes = [
   { path: "/", element: <Home /> },
@@ -26,4 +27,5 @@ export const routes = [
       { path: "student-enrolled", element: <StudentsEnrolled/> },
     ],
   },
+  { path: "/profile", element: <UserPage /> },
 ];

@@ -6,25 +6,17 @@ import Course from "../models/Course.js";
 
 export const clerkWebhooks = async (req, res) => {
   try {
-    const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-    await webhook.verify(JSON.stringify(req.body), {
+    const payload = req.body; 
+    const headers = {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
-    });
+    };
 
-    const payload = req.body; 
-    // const headers = {
-    //   "svix-id": req.headers["svix-id"],
-    //   "svix-timestamp": req.headers["svix-timestamp"],
-    //   "svix-signature": req.headers["svix-signature"],
-    // };
+    const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    const event = webhook.verify(payload, headers);
 
-    // const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-    // const event = webhook.verify(payload, headers);
-
-    // const { data, type } = event; 
+    const { data, type } = event; 
 
     switch (type) {
       case "user.created": {

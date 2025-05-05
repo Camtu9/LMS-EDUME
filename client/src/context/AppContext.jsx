@@ -22,6 +22,25 @@ export const AppContextProvider = (props) => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
 
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
+
+  const openSignIn = () => {
+    setShowSignUp(false);
+    setShowSignIn(true);
+  };
+
+  const openSignUp = () => {
+    setShowSignIn(false);
+    setShowSignUp(true);
+  };
+
+  const closeModals = () => {
+    setShowSignIn(false);
+    setShowSignUp(false);
+  };
+  
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const navigate = useNavigate();
@@ -141,6 +160,11 @@ export const AppContextProvider = (props) => {
     getToken,
     fetchAllCourses,
     setIsEducator,
+    showSignIn,
+    showSignUp,
+    openSignIn,
+    openSignUp,
+    closeModals
   };
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>

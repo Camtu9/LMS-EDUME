@@ -3,11 +3,70 @@ import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
 import CourseProgress from "../models/CourseProgress.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmail = reg.test(email);
+    if (!name || !email || !password) {
+      return res.json({ success: false, message: "The input is required" });
+    } else if (!isEmail) {
+      return res.json({
+        success: false,
+        message: "The email is not correctly",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+    const user = await newUser.save();
+    res.json({ success: true, user });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({ success: false, message: "Incorrect password" });
+    }
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      success: true,
+      token,
+      user: { name: user.name, email: user.email }
+    });
+  } catch (error) {
+    res.json({success: false, message: error.message})
+  }
+};
 
 export const getUserData = async (req, res) => {
   try {
-    const userId = req.auth.userId;
-    const user = await User.findById(userId);
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
@@ -35,7 +94,7 @@ export const purchaseCourse = async (req, res) => {
 
     const userData = await User.findById(userId);
     const courseData = await Course.findById(courseId);
-    
+
     if (!userData || !courseData) {
       return res.json({ success: false, message: "Data not found" });
     }
@@ -44,10 +103,11 @@ export const purchaseCourse = async (req, res) => {
       courseId: courseData._id,
       userId,
       amount: (
-        courseData.coursePrice - (courseData.discount * courseData.coursePrice) / 100
+        courseData.coursePrice -
+        (courseData.discount * courseData.coursePrice) / 100
       ).toFixed(2),
     };
-    
+
     const newPurchase = await Purchase.create(purchaseData);
 
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -86,7 +146,7 @@ export const updateUserCourseProgress = async (req, res) => {
   try {
     const userId = req.auth.userId;
     const { courseId, lectureId } = req.body;
-    
+
     const progressData = await CourseProgress.findOne({ userId, courseId });
 
     if (progressData) {
@@ -117,7 +177,7 @@ export const getUserCourseProgress = async (req, res) => {
     const userId = req.auth.userId;
     const { courseId } = req.body;
     const progressData = await CourseProgress.findOne({ userId, courseId });
-    
+
     res.json({ success: true, progressData });
   } catch (error) {
     res.json({ success: false, message: error.message });
