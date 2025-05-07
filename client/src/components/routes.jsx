@@ -9,8 +9,8 @@ import AddCourse from "../pages/educator/AddCourse";
 import MyCourses from "../pages/educator/MyCourses";
 import StudentsEnrolled from "../pages/educator/StudentsEnrolled";
 import UserPage from "../pages/UserPage";
-import PaymentSuccess from "../pages/students/paymentSuccess";
 import PaymentFailure from "../pages/students/PaymentFailure";
+import PaymentSuccess from "../pages/students/paymentSuccess";
 
 export const routes = [
   { path: "/", element: <Home /> },
