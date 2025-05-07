@@ -31,10 +31,10 @@ export const vnpayReturn = async (req, res) => {
         await Course.findByIdAndUpdate(courseId, {
           $addToSet: { enrolledStudents: userId },
         });
-        return res.redirect("http://localhost:5173/payment-success");
+        return res.redirect(`${process.env.VITE_CLIENT_URL}/payment-success`);
       } else {
         await Purchase.findByIdAndUpdate(orderId, { status: "failed" });
-        return res.redirect("http://localhost:5173/payment-fail");
+        return res.redirect(`${process.env.VITE_CLIENT_URL}/payment-fail`);
       }
     } else {
       return res.status(400).json({ success: false, message: "Error" });
