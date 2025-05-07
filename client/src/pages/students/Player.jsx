@@ -277,7 +277,7 @@ const Player = () => {
     enrolledCourses,
     calculateChapterTime,
     backendUrl,
-    getToken,
+    token,
     userData,
     fetchEnrolledCourses,
   } = useAppContext();
@@ -289,19 +289,19 @@ const Player = () => {
   const [progressData, setProgressData] = useState(null);
   const [initialRating, setInitialRating] = useState(0);
 
-  // Lấy dữ liệu khóa học đã ghi danh
   const getCourseData = () => {
-    const course = enrolledCourses.find(c => c._id === courseId);
+    const course = enrolledCourses.find((c) => c._id === courseId);
     if (course) {
       setCourseData(course);
-      const rating = course.courseRatings.find(r => r.userId === userData._id);
+      const rating = course.courseRatings.find(
+        (r) => r.userId === userData._id
+      );
       if (rating) setInitialRating(rating.rating);
     }
   };
 
   const getCourseProgress = async () => {
     try {
-      const token = await getToken();
       const { data } = await axios.post(
         `${backendUrl}/api/user/get-course-progress`,
         { courseId },
@@ -316,7 +316,6 @@ const Player = () => {
 
   const markLectureCompleted = async (lectureId) => {
     try {
-      const token = await getToken();
       const { data } = await axios.post(
         `${backendUrl}/api/user/update-course-progress`,
         { courseId, lectureId },
@@ -333,7 +332,6 @@ const Player = () => {
 
   const handleRate = async (rating) => {
     try {
-      const token = await getToken();
       const { data } = await axios.post(
         `${backendUrl}/api/user/add-rating`,
         { courseId, rating },
@@ -349,7 +347,7 @@ const Player = () => {
   };
 
   const toggleSection = (index) => {
-    setOpenSections(prev => ({ ...prev, [index]: !prev[index] }));
+    setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   useEffect(() => {
@@ -360,51 +358,83 @@ const Player = () => {
     getCourseProgress();
   }, []);
 
-  if (!courseData) return <Loading/>;
+  if (!courseData) return <Loading />;
 
   return (
-    <div className="p-4 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {/* Danh sách chương */}
-      <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Content</h2>
+    <div className="p-6 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* LEFT: Course Content */}
+      <div className="bg-white rounded-lg p-6 border border-gray-200 shadow">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+          Course Content
+        </h2>
+
         <div className="space-y-4">
           {courseData.courseContent.map((chapter, chapterIndex) => (
-            <div key={chapterIndex} className="border rounded-xl shadow-sm">
+            <div
+              key={chapterIndex}
+              className="bg-white border border-gray-200 rounded-lg shadow-sm transition hover:shadow-md"
+            >
               <div
-                className="flex justify-between items-center px-4 py-3 cursor-pointer"
+                className="flex justify-between items-center px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
                 onClick={() => toggleSection(chapterIndex)}
               >
                 <div className="flex items-center gap-2">
                   <img
                     src={assets.down_arrow_icon}
-                    className={`w-4 transition-transform ${openSections[chapterIndex] ? "rotate-180" : ""}`}
+                    className={`w-4 transition-transform ${
+                      openSections[chapterIndex] ? "rotate-180" : ""
+                    }`}
+                    alt="Toggle"
                   />
-                  <p className="font-medium text-gray-800">{chapter.chapterTitle}</p>
+                  <p className="font-medium text-gray-800">
+                    {chapter.chapterTitle}
+                  </p>
                 </div>
                 <p className="text-sm text-gray-500">
-                  {chapter.chapterContent.length} lectures • {calculateChapterTime(chapter)}
+                  {chapter.chapterContent.length} lectures •{" "}
+                  {calculateChapterTime(chapter)}
                 </p>
               </div>
 
-              <div className={`overflow-hidden transition-all ${openSections[chapterIndex] ? "max-h-[800px]" : "max-h-0"}`}>
-                <ul className="pl-10 pr-4 py-2 space-y-2 text-sm text-gray-700 border-t">
+              <div
+                className={`transition-all overflow-hidden ${
+                  openSections[chapterIndex] ? "max-h-[800px]" : "max-h-0"
+                }`}
+              >
+                <ul className="pl-6 pr-4 py-2 space-y-3 text-sm text-gray-700">
                   {chapter.chapterContent.map((lecture, lectureIndex) => {
-                    const isPlaying = playerData?.lectureUrl === lecture.lectureUrl;
-                    const lectureId = lecture._id;
-                    const isCompleted = progressData?.lectureCompleted.includes(lecture.lectureId);
+                    const isPlaying =
+                      playerData?.lectureUrl === lecture.lectureUrl;
+                    const lectureId = lecture.lectureId;
+                    const isCompleted =
+                      progressData?.lectureCompleted.includes(lectureId);
 
                     return (
-                      <li key={lectureId || lectureIndex} className={`flex justify-between ${isPlaying ? "text-blue-600 font-medium" : ""}`}>
+                      <li
+                        key={lectureId || lectureIndex}
+                        className="flex justify-between items-center"
+                      >
                         <div className="flex gap-2 items-start">
                           <img
-                            src={isCompleted ? assets.blue_tick_icon : assets.play_icon}
+                            src={
+                              isCompleted
+                                ? assets.blue_tick_icon
+                                : assets.play_icon
+                            }
                             className="w-4 h-4 mt-1"
+                            alt="Status"
                           />
-                          <p>{lecture.lectureTitle}</p>
+                          <span
+                            className={`line-clamp-1 ${
+                              isPlaying ? "text-blue-600 font-medium" : ""
+                            }`}
+                          >
+                            {lecture.lectureTitle}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2 text-blue-500">
+                        <div className="flex items-center gap-3">
                           {lecture.lectureUrl && (
-                            <p
+                            <button
                               onClick={() =>
                                 setPlayerData({
                                   ...lecture,
@@ -413,14 +443,20 @@ const Player = () => {
                                   lectureId,
                                 })
                               }
-                              className="underline hover:text-blue-600 cursor-pointer"
+                              className={`text-xs underline  ${
+                                isCompleted
+                                  ? "text-violet-600 hover:text-violet-800"
+                                  : "text-blue-600 hover:text-blue-800"
+                              }`}
                             >
                               Watch
-                            </p>
+                            </button>
                           )}
-                          <p className="text-gray-500 text-xs">
-                            {humanizeDuration(lecture.lectureDuration * 60000, { units: ["h", "m"] })}
-                          </p>
+                          <span className="text-gray-400 text-xs">
+                            {humanizeDuration(lecture.lectureDuration * 60000, {
+                              units: ["h", "m"],
+                            })}
+                          </span>
                         </div>
                       </li>
                     );
@@ -431,34 +467,40 @@ const Player = () => {
           ))}
         </div>
 
-        {/* Đánh giá */}
-        <div className="pt-6 border-t mt-6 flex items-center">
-          <h3 className="text-lg font-semibold text-gray-800 mr-4">Rate this Course:</h3>
+        {/* Rating */}
+        <div className="pt-6 border-t mt-6 flex items-center gap-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Rate this Course:
+          </h3>
           <Rating initialRating={initialRating} onRate={handleRate} />
         </div>
       </div>
 
-      {/* Trình phát video */}
-      <div className="bg-white rounded-lg p-6 border shadow-md">
+      <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm transition hover:shadow-md">
         {playerData ? (
           <>
-            <div className="w-full aspect-video relative overflow-hidden rounded-md">
+            <div className="w-full aspect-video relative overflow-hidden rounded-md mb-4">
               <YouTube
                 videoId={playerData.lectureUrl.split("/").pop()}
-                opts={{ width: "100%", height: "100%", playerVars: { autoplay: 0 } }}
+                opts={{
+                  width: "100%",
+                  height: "100%",
+                  playerVars: { autoplay: 0 },
+                }}
                 className="absolute top-0 left-0 w-full h-full"
               />
             </div>
-            <div className="mt-4 flex justify-between items-center">
+            <div className="flex justify-between items-center">
               <p className="text-lg font-semibold text-gray-800">
-                {playerData.chapter}.{playerData.lecture} {playerData.lectureTitle}
+                {playerData.chapter}.{playerData.lecture} -{" "}
+                {playerData.lectureTitle}
               </p>
               <button
-                className={`text-sm font-semibold ${
+                className={`text-sm font-medium transition ${
                   progressData?.lectureCompleted.includes(playerData.lectureId)
                     ? "text-green-600"
-                    : "text-blue-600"
-                } hover:underline`}
+                    : "text-blue-600 hover:text-blue-800"
+                }`}
                 onClick={() => markLectureCompleted(playerData.lectureId)}
               >
                 {progressData?.lectureCompleted.includes(playerData.lectureId)
@@ -468,7 +510,11 @@ const Player = () => {
             </div>
           </>
         ) : (
-          <img src={courseData.courseThumbnail} className="w-full rounded-md" alt="Course Thumbnail" />
+          <img
+            src={courseData.courseThumbnail}
+            className="w-full rounded-md"
+            alt="Course Thumbnail"
+          />
         )}
       </div>
     </div>

@@ -6,12 +6,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Dashboard = () => {
-  const { currency, backendUrl, isEducator, getToken } = useAppContext();
+  const { currency, backendUrl, isEducator, token } = useAppContext();
   const [dashboardData, setDashboardData] = useState(null);
 
   const fetchDashboardData = async () => {
     try {
-      const token = await getToken();
       const { data } = await axios.get(`${backendUrl}/api/educator/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -75,43 +74,55 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500">Total Earnings</p>
         </div>
       </div>
-      <div>
-        <h2 className="pb-2 text-lg font-medium">Latest Enrollments</h2>
-        <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border-gray-500/20">
-          <table className="table-fixed md:table-auto w-full overflow-hidden">
-            <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-              <tr>
-                <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                  #
-                </th>
-                <th className="px-4 py-3 font-semibold text-center">
-                  Student Name
-                </th>
-                <th className="px-4 py-3 font-semibold text-center">
-                  Course Title
-                </th>
-              </tr>
-            </thead>
-            <tbody className="text-sm text-gray-500">
-              {dashboardData.enrolledStudentsData.map((item, index) => (
-                <tr key={index} className="border-b border-gray-500/20">
-                  <td className="px-4 py-3 text-center hidden sm:table-cell">
-                    {index + 1}
-                  </td>
-                  <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
-                    <img
-                      src={item.student.imageUrl}
-                      className="w-9 h-9 rounded-full"
-                    />
-                    <span className="truncate">{item.student.name}</span>
-                  </td>
-                  <td className="px-4 py-3 truncate">{item.courseTitle}</td>
+      {dashboardData.enrolledStudentsData.length > 0 ? (
+        <div>
+          <h2 className="pb-2 text-lg font-medium">Latest Enrollments</h2>
+          <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border-gray-500/20">
+            <table className="table-fixed md:table-auto w-full overflow-hidden">
+              <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
+                <tr>
+                  <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
+                    #
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-center">
+                    Student Name
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-center">
+                    Course Title
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-sm text-gray-500">
+                {dashboardData.enrolledStudentsData.map((item, index) => (
+                  <tr key={index} className="border-b border-gray-500/20">
+                    <td className="px-4 py-3 text-center hidden sm:table-cell">
+                      {index + 1}
+                    </td>
+                    <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
+                      <img
+                        src={item.student.imageUrl}
+                        className="w-9 h-9 rounded-full"
+                      />
+                      <span className="truncate">{item.student.name}</span>
+                    </td>
+                    <td className="px-4 py-3 truncate">{item.courseTitle}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-center py-20 text-gray-600">
+          <h3 className="text-lg font-semibold">
+            No students have enrolled yet.
+          </h3>
+          <p className="text-sm mt-2">
+            Be patient! Once students start enrolling in your courses, you'll be
+            able to track their progress here.
+          </p>
+        </div>
+      )}
     </div>
   ) : (
     <Loading />

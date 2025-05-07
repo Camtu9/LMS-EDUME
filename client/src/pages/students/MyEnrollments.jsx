@@ -12,14 +12,13 @@ const MyEnrollments = () => {
     userData,
     fetchEnrolledCourses,
     backendUrl,
-    getToken,
-    calculateNoLectures,
+    token,
+    calculateNoLecture,
   } = useAppContext();
   const [progressArray, setProgressArray] = useState([]);
 
   const getCourseProgress = async () => {
     try {
-      const token = await getToken();
       const tempProgressArray = await Promise.all(
         enrolledCourses.map(async (course) => {
           const { data } = await axios.post(
@@ -27,7 +26,7 @@ const MyEnrollments = () => {
             { courseId: course._id },
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          let totalLecture = calculateNoLectures(course);
+          let totalLecture = calculateNoLecture(course);
           const lectureCompleted = data.progressData
             ? data.progressData.lectureCompleted.length
             : 0;
@@ -40,17 +39,36 @@ const MyEnrollments = () => {
     }
   };
 
-  useEffect(()=> {
-    if(userData){
-      fetchEnrolledCourses()
+  useEffect(() => {
+    if (userData) {
+      fetchEnrolledCourses();
     }
-  },[userData])
+  }, [userData]);
 
-  useEffect(()=> {
-    if(enrolledCourses.length > 0){
-      getCourseProgress()
+  useEffect(() => {
+    if (enrolledCourses.length > 0) {
+      getCourseProgress();
     }
-  },[userData])
+  }, [userData]);
+
+  if (!enrolledCourses || enrolledCourses.length === 0) {
+    return (
+      <div className="text-center py-20 text-gray-600">
+        <h3 className="text-lg font-semibold">
+          You haven’t enrolled in any courses yet.
+        </h3>
+        <p className="text-sm mt-2">
+          Start exploring and find a course to begin learning!
+        </p>
+        <button
+          onClick={() => navigate("/course-list")}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+        >
+          Browse Courses
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="md:px-36 px-4 pt-10 pb-16">
@@ -97,7 +115,7 @@ const MyEnrollments = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm mb-1">
-                      {progress.lectureCompleted} / {progress.totalLecture}{" "}
+                      {progress?.lectureCompleted} / {progress?.totalLecture}{" "}
                       Lectures
                     </div>
                     <Line
@@ -160,7 +178,7 @@ const MyEnrollments = () => {
               </div>
 
               <p className="text-sm text-gray-700 mb-1">
-                Progress: {progress.lectureCompleted} / {progress.totalLecture}{" "}
+                Progress: {progress?.lectureCompleted} / {progress?.totalLecture}{" "}
                 Lectures
               </p>
 

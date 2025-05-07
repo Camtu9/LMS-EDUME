@@ -23,7 +23,7 @@ const CourseDetail = () => {
     currency,
     backendUrl,
     userData,
-    getToken,
+    token,
   } = useAppContext();
 
   const fetchCourseData = async () => {
@@ -47,7 +47,6 @@ const CourseDetail = () => {
       if (isEnrolled) {
         return toast.warn("Already Enrolled");
       }
-      const token = await getToken();
       const { data } = await axios.post(
         backendUrl + "/api/user/purchase",
         { courseId: courseData._id },
