@@ -14,7 +14,14 @@ const CourseCard = ({ course }) => {
       onClick={() => scrollTo(0, 0)}
       className="border border-gray-500/30 pb-6 overflow-hidden rounded-lg"
     >
-      <img className="w-full" src={course.courseThumbnail} alt="" />
+      <div className="relative">
+        <img className="w-full" src={course.courseThumbnail} alt="" />
+        {course.discount > 0 && (
+          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
+            -{course.discount}%
+          </span>
+        )}
+      </div>
       <div className="p-3 text-left">
         <h3 className="text-base font-semibold">{course.courseTitle}</h3>
         <p className="text-gray-500">{course.educator.name}</p>
@@ -34,13 +41,19 @@ const CourseCard = ({ course }) => {
             <p className="text-gray-500">{course.courseRatings.length}</p>
           </div>
         )}
-        <p className="text-base font-semibold text-gray-500">
-          {(
-            course.coursePrice -
-            (course.discount * course.coursePrice) / 100
-          ).toFixed(2)}
-          {currency}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-base font-bold text-gray-700">
+            {(
+              course.coursePrice -
+              (course.discount * course.coursePrice) / 100
+            ).toFixed(2)}
+            {currency}
+          </p>
+          <p className="text-sm font-medium text-gray-500 line-through">
+            {course.coursePrice}
+            {currency}
+          </p>
+        </div>
       </div>
     </Link>
   );

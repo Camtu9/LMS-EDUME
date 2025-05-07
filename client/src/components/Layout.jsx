@@ -10,11 +10,11 @@ import SignUpModal from "./SignUpModal";
 const Layout = ({ children }) => {
   const isEducationRoute = useMatch("/educator/*");
   return (
-    <div className="text-default min-h-screen bg-white">
+    <div className="flex flex-col text-default min-h-screen bg-white">
       {isEducationRoute ? <EducatorNavbar /> : <StudentNavbar />}
       <SignInModal />
       <SignUpModal />
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
       {isEducationRoute ? <EducatorFooter /> : <StudentFooter />}
     </div>
   );

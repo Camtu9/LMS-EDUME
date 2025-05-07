@@ -9,6 +9,8 @@ import AddCourse from "../pages/educator/AddCourse";
 import MyCourses from "../pages/educator/MyCourses";
 import StudentsEnrolled from "../pages/educator/StudentsEnrolled";
 import UserPage from "../pages/UserPage";
+import PaymentSuccess from "../pages/students/paymentSuccess";
+import PaymentFailure from "../pages/students/PaymentFailure";
 
 export const routes = [
   { path: "/", element: <Home /> },
@@ -28,4 +30,6 @@ export const routes = [
     ],
   },
   { path: "/profile", element: <UserPage /> },
+  { path: "/payment-success", element: <PaymentSuccess /> },
+  { path: "/payment-fail", element: <PaymentFailure/> },
 ];

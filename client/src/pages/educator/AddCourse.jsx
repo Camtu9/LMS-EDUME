@@ -24,7 +24,7 @@ const AddCourse = () => {
     lectureUrl: "",
     isPreviewFree: false,
   });
-  const { backendUrl, getToken } = useAppContext();
+  const { backendUrl, token } = useAppContext();
 
   const handleChapter = (action, id = null) => {
     if (action === "add") {
@@ -122,7 +122,6 @@ const AddCourse = () => {
       const formData = new FormData();
       formData.append("courseData", JSON.stringify(courseData));
       formData.append("image", image);
-      const token = await getToken();
       const { data } = await axios.post(
         `${backendUrl}/api/educator/add-course`,
         formData,
@@ -153,7 +152,7 @@ const AddCourse = () => {
   }, []);
 
   return (
-    <div className="h-screen overflow-scroll flex flex-col items-start justify-between p-4 pt-8">
+    <div className="h-screen overflow-scroll flex flex-col items-center justify-between p-4 pt-8">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 max-w-xl w-full text-gray-700"
