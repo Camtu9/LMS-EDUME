@@ -29,13 +29,13 @@ const UserPage = () => {
   const tabs = [
     { key: "userInfo", label: "User Information", icon: <FaUser /> },
     { key: "changePassword", label: "Change Password", icon: <FaLock /> },
-    { key: "orderCourse", label: "My Enrollments", icon: <FaBookOpen /> },
+    
   ];
 
   const tabContent = {
     userInfo: <UserInfo />,
     changePassword: <ChangePassword />,
-    orderCourse: <MyEnrollments />,
+
   };
 
   return (
